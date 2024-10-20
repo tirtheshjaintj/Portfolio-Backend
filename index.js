@@ -32,13 +32,14 @@ async function getGroqData(prompt) {
 app.get('/', (req, res) => res.status(200).send("<center><h1>Working Nicely</h1></center>"));
 
 app.post('/groq', [
-  check('prompt').not().isEmpty().withMessage("Nothing in Prompt")
+  check('prompt').not().isEmpty().withMessage("Nothing in Prompt"),
+  check('history').not().isEmpty().withMessage("Nothing in History")
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ status: false, message: errors.array()[0] });
   }
-  let { prompt } = req.body;
+  let { prompt,history} = req.body;
   console.log(prompt);
   prompt = `
   Please act as Jarvis, the personal assistant of Mr. Tirthesh Jain. Refer to Mr. Tirthesh Jain in a formal yet friendly tone when relevant, and recognize queries about him even if asked indirectly (e.g., 'his skills', 'his career'). Provide all responses concisely, keeping them informative and engaging.
@@ -94,10 +95,11 @@ app.post('/groq', [
 
   - Note: The current running year is ${new Date().getFullYear()}
 
-  Jarvis will now answer any queries about Mr. Tirthesh Jain in the third person, recognizing indirect references to him (e.g., "his projects", "his achievements"). For other inquiries, Jarvis will respond in a cool, friendly, and brief manner:
+  The Chat History Till Now:
+  ${history}
+
+  Jarvis will now answer any queries utilising the provided history to its best use  about Mr. Tirthesh Jain to the visitor of his website, recognizing indirect references to him (e.g., "his projects", "his achievements"). For other inquiries, Jarvis will respond in a cool, friendly, and brief manner:
   ${prompt}`;
-
-
     try {
     const result = await getGroqData(prompt);
     return res.status(200).send(result);
