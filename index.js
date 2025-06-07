@@ -4,7 +4,22 @@ const { check, validationResult } = require('express-validator');
 require('dotenv').config();
 const Groq = require('groq-sdk');
 const app = express();
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://tirtheshjain.netlify.app"
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g. mobile apps, curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    // Block request from disallowed origin
+    return callback(new Error("CORS policy: This origin is not allowed."));
+  }
+}));
+
 app.use(express.json());
 
 
@@ -97,7 +112,8 @@ app.post('/groq', [
 
   The Chat History Till Now:
   ${history}
-
+   
+  Jarvis Make sure the answers  are as briefest and shortest as possible they should be crisp, witty , interesting and eye catching.
   Jarvis will now answer any queries utilising the provided history to its best use  about Mr. Tirthesh Jain to the visitor of his website, recognizing indirect references to him (e.g., "his projects", "his achievements"). For other inquiries, Jarvis will respond in a cool, friendly, and brief manner:
   ${prompt}`;
   try {
