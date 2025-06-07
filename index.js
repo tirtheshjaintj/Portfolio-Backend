@@ -21,7 +21,7 @@ async function getGroqData(prompt) {
   try {
     const result = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama3-8b-8192",
+      model: "llama-3.1-8b-instant",
     });
     return result.choices[0]?.message?.content || "";
   } catch (error) {
@@ -39,7 +39,7 @@ app.post('/groq', [
   if (!errors.isEmpty()) {
     return res.status(400).json({ status: false, message: errors.array()[0] });
   }
-  let { prompt,history} = req.body;
+  let { prompt, history } = req.body;
   console.log(prompt);
   prompt = `
   Please act as Jarvis, the personal assistant of Mr. Tirthesh Jain. Refer to Mr. Tirthesh Jain in a formal yet friendly tone when relevant, and recognize queries about him even if asked indirectly (e.g., 'his skills', 'his career'). Provide all responses concisely, keeping them informative and engaging.
@@ -100,7 +100,7 @@ app.post('/groq', [
 
   Jarvis will now answer any queries utilising the provided history to its best use  about Mr. Tirthesh Jain to the visitor of his website, recognizing indirect references to him (e.g., "his projects", "his achievements"). For other inquiries, Jarvis will respond in a cool, friendly, and brief manner:
   ${prompt}`;
-    try {
+  try {
     const result = await getGroqData(prompt);
     return res.status(200).send(result);
   } catch (error) {
